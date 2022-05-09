@@ -35,9 +35,11 @@ func writeStringToFile(message string) error {
 	// close the file with defer
 	defer f.Close()
 
-	// do operations
-
 	//write directly into file
 	f.Write([]byte(message))
+	err = os.Chmod("test.txt", 0700)
+	if err != nil {
+		return err
+	}
 	return err
 }
