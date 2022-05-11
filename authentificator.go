@@ -13,7 +13,7 @@ import (
 
 // userData is a simple structure to automate and make user login and logout easy
 type UserData struct {
-	userID          [16]byte
+	userID          string
 	userName        string
 	userPassword    string
 	encodedPassword []byte
@@ -22,7 +22,7 @@ type UserData struct {
 // initUser will initialize name and password as well as create a unique ID for the user. That ID will then be used instead of
 // userName
 func (user *UserData) initUser(userName string, userPass string) {
-	user.userID = uuid.New()
+	user.userID = uuid.NewString()
 	user.userName = userName
 	user.userPassword = userPass
 }
@@ -38,6 +38,8 @@ func (user *UserData) writeStringToFile(fileName string) error {
 	defer f.Close()
 	// Build the message, separating the username and password by \n
 	var msg strings.Builder
+	msg.WriteString(user.userID)
+	msg.WriteString("\n")
 	msg.WriteString(user.userName)
 	msg.WriteString("\n")
 	msg.Write([]byte(user.encodedPassword))
@@ -69,8 +71,9 @@ func (user *UserData) readFile(fileName string) (err error) {
 		// read the 2 value as a string slice separated by \n
 		strVar := string(content)
 		userInfo := strings.Split(strVar, "\n")
-		user.userName = userInfo[0]
-		user.encodedPassword = []byte(userInfo[1])
+		user.userID = userInfo[0]
+		user.userName = userInfo[1]
+		user.encodedPassword = []byte(userInfo[2])
 		return
 	}
 }
